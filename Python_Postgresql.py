@@ -183,6 +183,13 @@ def dbConsultarEmpleados():
         print(error)
 
 # ------------------------------------------------------------------
+def mostrarValoresDepartamentos(tupla):
+    print(f"Número de departamento: ",tupla[0])
+    print(f"Nombre de departamento: ",tupla[1])
+    print(f"Coste: ",tupla[2])
+    print(f"%: ",tupla[3])
+    print('------------------------------')
+
 
 def dbConsultarDepartamentos():
     print("---dbConsultarDepartamentos---")
@@ -204,11 +211,7 @@ def dbConsultarDepartamentos():
 
         #Se imprime por pantalla la información recuperada. En este caso, como se trata de una lista, se itera
         for tupla in resul:
-            print(f"Número de departamento: ",tupla[0])
-            print(f"Nombre de departamento: ",tupla[1])
-            print(f"Coste: ",tupla[2])
-            print(f"%: ",tupla[3])
-            print('------------------------------')
+            mostrarValoresDepartamentos(tupla)
         print("Número de registros recuperados:",len(resul))
         print("Número de registros recuperados:",cursor.rowcount)
         print('------------------------------')
@@ -242,22 +245,71 @@ def dbInsertarDepartamentos():
 
 # ------------------------------------------------------------------
 
+def controlTeclado():
+    print("1- Nombre del departamento")
+    print("2- Coste del departamento")
+    print("3- Porcentaje del departamento")
+    eleccion = input("Elige qué propiedad quieres actualizar de este departamento. (1-3)")
+    print(int(eleccion))
+    while( not ( 1<= int(eleccion) <= 3) ):
+        eleccion = input("Lo sentimos. Elige un valor aceptado (1-3)")
+
+    return eleccion
+    
+def controlSalir():
+    salir = input("¿Desea realizar otra operación? (S/N): ")
+    while(salir.lower()!= 's' and salir.lower()!= 'n'):
+        
+        salir = input("Valor no valido")
+    match salir.lower():
+        case 's':
+            return True
+        case 'n':
+            return False
+            
+
+            
+
 def dbModificarDepartamentos():
     print("---dbModificarDepartamentos---")
-
+    salir = False
     try:
         cursor = conexion.cursor()
+        while(not salir):
+            numDpto = input("Introduce el número del departamento a actualizar: ")
+            eleccion = controlTeclado()
+            # nombreDpto = input("Introduce el nuevo nombre del departamento que quieres poner: ")
+            # costeDto = input("Introduce el coste del departamento: ")
+            # porcentajeDpto = input("Introduce el porcentaje del departamento: ")
 
-        numDpto = input("Introduce el número del departamento a actualizar: ")
-        nombreDpto = input("Introduce el nuevo nombre del departamento que quieres poner: ")
-        # costeDto = input("Introduce el coste del departamento: ")
-        # porcentajeDpto = input("Introduce el porcentaje del departamento: ")
 
-        consulta = "UPDATE departamentos SET nombredpto = %s WHERE numerodpto = %s"
 
-        cursor.execute(consulta, [nombreDpto,numDpto])
+            match int(eleccion):
+                case 1:
+                    nuevo_valor = input("Introduce el nuevo nombre del departamento que quieres poner: ")
+                    consulta = "UPDATE departamentos SET nombredpto = %s WHERE numerodpto = %s"
+                case 2:
+                    nuevo_valor = input("Introduce el nuevo coste del departamento que quieres poner: ")
+                    consulta = "UPDATE departamentos SET coste = %s WHERE numerodpto = %s"
+                case 3:
+                    nuevo_valor = input("Introduce el nuevo porcentaje del departamento que quieres poner: ")
+                    consulta = "UPDATE departamentos SET porcent = %s WHERE numerodpto = %s"
+            
+                    
+            # consulta = "UPDATE departamentos SET nombredpto = %s WHERE numerodpto = %s"
 
-        print("Tupla actualizada correctamente")
+            cursor.execute(consulta, [nuevo_valor,numDpto])
+
+            print("Tupla actualizada correctamente")
+            consulta_actualizacion = "SELECT * FROM Departamentos WHERE numerodpto = %s"
+            cursor.execute(consulta_actualizacion, [numDpto])
+
+            resul = cursor.fetchone()
+            print("-------- tupla actualizada ------------")
+            mostrarValoresDepartamentos(resul)
+            print('------------------------------')
+
+            salir = controlSalir()
         cursor.close()
     except PBD.DatabaseError as error:
         print("Error. No se ha podido modificar el Departamento")
@@ -347,29 +399,29 @@ if (conexion is None):
 else:
     print("CONEXIÓN REALIZADA")
 
-    dbMostrarEmpleados1()
-    dbMostrarEmpleados2()
-    dbMostrarEmpleados3()
-    dbMostrarEmpleados4()
+    # dbMostrarEmpleados1()
+    # dbMostrarEmpleados2()
+    # dbMostrarEmpleados3()
+    # dbMostrarEmpleados4()
     
-    dbObtenerEmpleados()
-    dbConsultarEmpleados()
-    dbConsultarDepartamentos()
+    # dbObtenerEmpleados()
+    # dbConsultarEmpleados()
+    # dbConsultarDepartamentos()
 
-    dbInsertarDepartamentos()
-    dbConsultarDepartamentos()
+    # dbInsertarDepartamentos()
+    # dbConsultarDepartamentos()
 
     dbModificarDepartamentos()
     dbConsultarDepartamentos()
 
-    dbBorrarDepartamentos()
-    dbConsultarDepartamentos()
+    # dbBorrarDepartamentos()
+    # dbConsultarDepartamentos()
 
-    dbInsertarMultiplesDepartamentos()
-    dbConsultarDepartamentos()
+    # dbInsertarMultiplesDepartamentos()
+    # dbConsultarDepartamentos()
     
-    dbBorrarMultiplesDepartamentos()
-    dbConsultarDepartamentos()
+    # dbBorrarMultiplesDepartamentos()
+    # dbConsultarDepartamentos()
     
     dbDesconectar()
 
