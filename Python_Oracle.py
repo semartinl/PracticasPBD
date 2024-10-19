@@ -349,6 +349,8 @@ def Examen():
         #Se ejecuta la consulta
         cursor.execute(consulta)    
 
+        
+
         #Se guarda en la variable "result" la información recuperada de la petición.   
         #En este caso, se trata de todas las filas existentes en la tabla "Departamentos"
         resul = cursor.fetchall()

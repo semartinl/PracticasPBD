@@ -1,0 +1,3 @@
+Examen modulo que imprima las tuplas de departamentos uno a uno "numerodpto y nombredpto". Tras esta linea, imprimir a todos los empleados con el formato: "dni, nombre, sueldo, numdep". 
+JAVA -> POSTGRESQL
+Python -> Oracle. 
