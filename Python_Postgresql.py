@@ -242,6 +242,7 @@ def dbInsertarDepartamentos():
     except PBD.DatabaseError as error:
         print("Error. No se ha podido insertar el Departamento")
         print(error)
+        cursor.close()
 
 # ------------------------------------------------------------------
 
@@ -263,9 +264,9 @@ def controlSalir():
         salir = input("Valor no valido")
     match salir.lower():
         case 's':
-            return True
-        case 'n':
             return False
+        case 'n':
+            return True
             
 
             
@@ -404,24 +405,24 @@ else:
     # dbMostrarEmpleados3()
     # dbMostrarEmpleados4()
     
-    # dbObtenerEmpleados()
-    # dbConsultarEmpleados()
-    # dbConsultarDepartamentos()
-
-    # dbInsertarDepartamentos()
-    # dbConsultarDepartamentos()
-
-    dbModificarDepartamentos()
+    dbObtenerEmpleados()
+    dbConsultarEmpleados()
     dbConsultarDepartamentos()
 
-    # dbBorrarDepartamentos()
-    # dbConsultarDepartamentos()
+    #dbInsertarDepartamentos()
+    dbConsultarDepartamentos()
 
-    # dbInsertarMultiplesDepartamentos()
-    # dbConsultarDepartamentos()
+    #dbModificarDepartamentos()
+    #dbConsultarDepartamentos()
+
+    #dbBorrarDepartamentos()
+    dbConsultarDepartamentos()
+
+    #dbInsertarMultiplesDepartamentos()
+    dbConsultarDepartamentos()
     
-    # dbBorrarMultiplesDepartamentos()
-    # dbConsultarDepartamentos()
+    #dbBorrarMultiplesDepartamentos()
+    dbConsultarDepartamentos()
     
     dbDesconectar()
 
