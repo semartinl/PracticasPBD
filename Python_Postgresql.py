@@ -115,6 +115,17 @@ def dbMostrarEmpleados4():
                   
 # ------------------------------------------------------------------
 
+def mostrarValoresEmpleados(tupla):
+    print(f"DNI: ",tupla[0])
+    print(f"Nombre: ",tupla[1])
+    print(f"Fecha Nacimiento: ",tupla[2])
+    print(f"CP: ",tupla[3])
+    print(f"Sexo: ",tupla[4])
+    print(f"Sueldo: ",tupla[5])
+    print(f"Número de departamento: ",tupla[6])
+    print('------------------------------')
+
+
 def dbObtenerEmpleados():
     print("---dbObtenerEmpleados---")
 
@@ -125,7 +136,7 @@ def dbObtenerEmpleados():
         #Se establece la conexión con la base de datos de Oracle.
         cursor = conexion.cursor()
         #Se inicializa la petición a nuestra base de datos de Oracle. Para Oracle, a la hora de
-        #realizar una petición, debemos inicializar los parametros de la consulta con :nom_propiedad. 
+        #realizar una petición, debemos inicializar los parametros de la consulta con %s
         #Esto nos permite evitar la inyección de código SQL.
         consulta = "SELECT * FROM Empleados  WHERE dni = %s"
 
@@ -137,9 +148,11 @@ def dbObtenerEmpleados():
         
         resul = cursor.fetchone()
         #Se imprime por pantalla la información recuperada.
-        print(resul)
+        if(resul):
+            mostrarValoresEmpleados(resul)
 
         cursor.close()
+        return resul
     except PBD.DatabaseError as error:
         print("Error. No se ha podido consultar la tupla", dniObjetivo)
         print(error)
@@ -166,14 +179,8 @@ def dbConsultarEmpleados():
 
         #Se imprime por pantalla la información recuperada. En este caso, como se trata de una lista, se itera
         for tupla in resul:
-            print(f"DNI: ",tupla[0])
-            print(f"Nombre: ",tupla[1])
-            print(f"Fecha Nacimiento: ",tupla[2])
-            print(f"CP: ",tupla[3])
-            print(f"Sexo: ",tupla[4])
-            print(f"Sueldo: ",tupla[5])
-            print(f"Número de departamento: ",tupla[6])
-            print('------------------------------')
+            mostrarValoresEmpleados(tupla)
+
         print("Número de registros recuperados:",len(resul))
         print("Número de registros recuperados:",cursor.rowcount)
         print('------------------------------')
@@ -250,10 +257,10 @@ def controlTeclado():
     print("1- Nombre del departamento")
     print("2- Coste del departamento")
     print("3- Porcentaje del departamento")
-    eleccion = input("Elige qué propiedad quieres actualizar de este departamento. (1-3)")
+    eleccion = input("Elige qué propiedad quieres actualizar de este departamento. (1-3): ")
     print(int(eleccion))
     while( not ( 1<= int(eleccion) <= 3) ):
-        eleccion = input("Lo sentimos. Elige un valor aceptado (1-3)")
+        eleccion = input("Lo sentimos. Elige un valor aceptado (1-3): ")
 
     return eleccion
     
@@ -261,7 +268,7 @@ def controlSalir():
     salir = input("¿Desea realizar otra operación? (S/N): ")
     while(salir.lower()!= 's' and salir.lower()!= 'n'):
         
-        salir = input("Valor no valido")
+        salir = input("Valor no valido \n")
     match salir.lower():
         case 's':
             return False
@@ -324,7 +331,7 @@ def dbBorrarDepartamentos():
     try:
         cursor = conexion.cursor()
 
-        numDpto = input("Introduce el número del departamento a actualizar: ")
+        numDpto = input("Introduce el número del departamento a borrar: ")
         #nombreDpto = input("Introduce el nuevo nombre del departamento que quieres poner: ")
         # costeDto = input("Introduce el coste del departamento: ")
         # porcentajeDpto = input("Introduce el porcentaje del departamento: ")
@@ -359,6 +366,7 @@ def dbInsertarMultiplesDepartamentos():
             cursor.execute(consulta, [fila[0], fila[1], fila[2], fila[3]])
 
             print("Tupla insertada correctamente")
+        print(f"Numero de tuplas insertadas: ", len(datos))
         cursor.close()
     except PBD.DatabaseError as error:
         print("Error. No se han podido insertar múltipes Departamentos")
@@ -381,11 +389,67 @@ def dbBorrarMultiplesDepartamentos():
             
             cursor.execute(consulta, [fila[0]])
             print("Tupla borrada correctamente")
+        print(f"Numero de tuplas borradas: ", len(datos))
         cursor.close()
     except PBD.DatabaseError as error:
         print("Error. No se han podido borrar múltiples Departamentos")
         print(error)
         cursor.close()
+
+def dbConsultarEmpleadosMismoDepartamento(idDep):
+    print(f"---dbConsultarEmpleadosMismoDepartamento({idDep})---")
+
+    try:
+        cursor = conexion.cursor()
+        consulta = "SELECT dni, nombre, sueldo, numdep FROM Empleados WHERE numdep = %s"
+
+        cursor.execute(consulta, [idDep])
+        resul = cursor.fetchall()
+
+        for tupla in resul:
+            print(f"DNI: ",tupla[0])
+            print(f"Nombre: ",tupla[1])
+            print(f"Sueldo: ",tupla[2])
+            print(f"Número de departamento: ",tupla[3])
+            print('------------------------------')
+
+    except PBD.DatabaseError as error:
+        print("Error. No se han podido recuperar los múltiples empleados del Departamento")
+        print(error)
+
+
+def dbMostrarEmpleadosDeCadaDepartamento():
+    print("---dbMostrarEmpleadosDeCadaDepartamento---")
+
+    try:
+        #Se establece la conexión con la base de datos de Oracle.
+        cursor = conexion.cursor()
+        #Se inicializa la petición a nuestra base de datos de Oracle. Para Oracle, a la hora de
+        #realizar una petición, debemos inicializar los parametros de la consulta con :nom_propiedad. 
+        #Esto nos permite evitar la inyección de código SQL.
+        consulta = "SELECT numerodpto,nombredpto FROM Departamentos"
+
+        #Se ejecuta la consulta
+        cursor.execute(consulta)    
+
+        #Se guarda en la variable "result" la información recuperada de la petición.   
+        #En este caso, se trata de todas las filas existentes en la tabla "Departamentos"
+        resul = cursor.fetchall()
+
+        #Se imprime por pantalla la información recuperada. En este caso, como se trata de una lista, se itera
+        for tupla in resul:
+            print(f"Número de departamento: ",tupla[0])
+            print(f"Nombre de departamento: ",tupla[1])
+            
+            dbConsultarEmpleadosMismoDepartamento(tupla[0])
+
+            print('------------------------------')
+        
+        print('------------------------------')
+        cursor.close()
+    except PBD.DatabaseError as error:
+        print("Error. No se han podido consultar las tuplas de Departamentos")
+        print(error)
 
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------
@@ -400,29 +464,31 @@ if (conexion is None):
 else:
     print("CONEXIÓN REALIZADA")
 
-    # dbMostrarEmpleados1()
-    # dbMostrarEmpleados2()
-    # dbMostrarEmpleados3()
-    # dbMostrarEmpleados4()
+    dbMostrarEmpleados1()
+    dbMostrarEmpleados2()
+    dbMostrarEmpleados3()
+    dbMostrarEmpleados4()
     
     dbObtenerEmpleados()
     dbConsultarEmpleados()
     dbConsultarDepartamentos()
 
-    #dbInsertarDepartamentos()
+    dbInsertarDepartamentos()
     dbConsultarDepartamentos()
 
-    #dbModificarDepartamentos()
-    #dbConsultarDepartamentos()
-
-    #dbBorrarDepartamentos()
+    dbModificarDepartamentos()
     dbConsultarDepartamentos()
 
-    #dbInsertarMultiplesDepartamentos()
+    dbBorrarDepartamentos()
+    dbConsultarDepartamentos()
+
+    dbInsertarMultiplesDepartamentos()
     dbConsultarDepartamentos()
     
-    #dbBorrarMultiplesDepartamentos()
+    dbBorrarMultiplesDepartamentos()
     dbConsultarDepartamentos()
+
+    dbMostrarEmpleadosDeCadaDepartamento()
     
     dbDesconectar()
 
